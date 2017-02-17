@@ -1,0 +1,26 @@
+{
+  "name": "ts-sample",
+  "version": "0.0.1",
+  "description": "Sample",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/aws-sdk": "0.0.42",
+    "@types/react": "^15.0.10",
+    "@types/react-dom": "^0.14.23",
+    "aws-sdk": "^2.15.0",
+    "react": "^15.4.2",
+    "react-dom": "^15.4.2"
+  },
+  "devDependencies": {
+    "awesome-typescript-loader": "^3.0.4",
+    "source-map-loader": "^0.1.6",
+    "tslint": "^4.4.2",
+    "typescript": "^2.1.6",
+    "webpack": "^2.2.1"
+  }
+}
