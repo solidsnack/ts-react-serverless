@@ -1,6 +1,14 @@
 import * as React from "react"
 
 
+export class SignUp {
+    constructor(readonly firstName: string,
+                readonly lastName: string,
+                readonly phone: Phone,
+                readonly zip: ZIP) {}
+}
+
+
 export class Form extends React.Component<{}, {}> {
     private form: HTMLFormElement | null = null
 
@@ -86,12 +94,6 @@ export class Form extends React.Component<{}, {}> {
             </form>
         </section>
     }
-}
-
-
-export class SignUp {
-    constructor(readonly firstName: string, readonly lastName: string,
-                readonly phone: Phone, readonly zip: ZIP) {}
 }
 
 
