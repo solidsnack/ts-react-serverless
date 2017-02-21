@@ -8,7 +8,7 @@ export class Form extends React.Component<{}, {}> {
                        constructor: {new(s: string): T}): T {
         try {
             const data = new constructor(input.value)
-            input.setCustomValidity("")               // Empty string means: OK
+            input.setCustomValidity("")
             return data
         } catch (e) {
             if (e instanceof SignUpDataError) {
@@ -96,15 +96,17 @@ export class SignUp {
 
 
 export class ZIP {
-    public static readonly re = /^[0-9]{5}(-[0-9]{4})?$/
+    public static readonly re = /^[0-9]{5}([+-][0-9]{4})?$/
+    public readonly normed: string
     public readonly original: string
 
     constructor(digits: string) {
         const trimmed = digits.trim()
         if (ZIP.re.test(trimmed)) {
             this.original = trimmed
+            this.normed = `${trimmed.replace(/[+]/, "-")}`
         } else {
-            throw new ZIPError(`Not a valid ZIP code: "${trimmed}"`)
+            throw new ZIPError("Please input a valid ZIP code or ZIP+4.")
         }
     }
 
@@ -125,7 +127,7 @@ export class Phone {
             this.original = trimmed
             this.normed = `+${trimmed.replace(/[^0-9]/, "")}`
         } else {
-            throw new PhoneError(`Not a valid phone number: "${trimmed}"`)
+            throw new PhoneError("Please input a valid phone number.")
         }
     }
 
