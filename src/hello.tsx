@@ -3,7 +3,10 @@ import * as React from "react"
 import {Form} from "./signup"
 
 
-interface ContentProps { headline: string; tagline: string; }
+export interface ContentProps {
+    headline: string
+    tagline: string
+}
 
 
 export class Hello extends React.Component<ContentProps, undefined> {
