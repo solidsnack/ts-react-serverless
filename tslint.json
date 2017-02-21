@@ -53,6 +53,16 @@
             true,
             "spaces"
         ],
+        "object-literal-shorthand": true,
+        "no-angle-bracket-type-assertion": true,
+        "array-type": [true, "array"],
+        "arrow-return-shorthand": [true, "multiline"],
+        "unified-signatures": true,
+        "prefer-const": true,
+        "linebreak-style": [true, "LF"],
+        "cyclomatic-complexity": [true, 10],
+        "max-line-length": [true, 79],
+        "eofline": true,
         "no-eval": true,
         "no-internal-module": true,
         "no-trailing-whitespace": true,
@@ -69,7 +79,7 @@
         ],
         "semicolon": [
             true,
-            "always"
+            "never"
         ],
         "triple-equals": [
             true,

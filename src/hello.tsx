@@ -1,12 +1,27 @@
-import * as React from "react";
+import * as React from "react"
 
-export interface HelloProps { compiler: string; framework: string; }
+import {Form} from "./signup"
 
-// 'HelloProps' describes the shape of props.
-// State is never set so we use the 'undefined' type.
-export class Hello extends React.Component<HelloProps, undefined> {
+
+interface ContentProps { headline: string; tagline: string; }
+
+
+export class Hello extends React.Component<ContentProps, undefined> {
     render() {
-        return <h1>Hello from {this.props.compiler} and {this.props.framework}!
-               </h1>;
+        return <article>
+            <Content headline={this.props.headline}
+                     tagline={this.props.tagline} />
+            <Form/>
+        </article>
+    }
+}
+
+
+export class Content extends React.Component<ContentProps, undefined> {
+    render() {
+        return <section>
+            <h1>{this.props.headline}</h1>
+            <p>{this.props.tagline}</p>
+        </section>
     }
 }
