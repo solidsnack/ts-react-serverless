@@ -113,24 +113,33 @@ export class ZIP {
     }
 
     toJSON(): string {
-       return this.original
+       return this.normed
     }
 }
 
 
 export class Phone {
-    public static readonly international = /^[+]([0-9] *){10,}$/
+    // E.164 format: https://support.twilio.com/hc/en-us/articles/223179888
+    public static readonly international = /^[+]([0-9] *){11,15}$/
     public readonly normed: string
     public readonly original: string
 
     constructor(digits: string) {
         const trimmed = digits.trim()
+        const justDigits = trimmed.replace(/[^0-9]/g, "")
         if (Phone.international.test(trimmed)) {
             this.original = trimmed
-            this.normed = `+${trimmed.replace(/[^0-9]/, "")}`
-        } else {
-            throw new PhoneError("Please input a valid phone number.")
+            this.normed = `+${justDigits}`
+
+            return
         }
+        if (justDigits.length == 10) {
+            this.original = trimmed
+            this.normed = `+1${justDigits}`                // Assume US, add +1
+            return
+        }
+        throw new PhoneError("Please input a valid phone number " +
+                             "(10 digit with area code, or `+1 ...`).")
     }
 
     toJSON(): string {
