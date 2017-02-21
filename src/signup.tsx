@@ -11,7 +11,7 @@ export class Form extends React.Component<{}, {}> {
             input.setCustomValidity("")               // Empty string means: OK
             return data
         } catch (e) {
-            if (e instanceof DataError) {
+            if (e instanceof SignUpDataError) {
                 input.setCustomValidity(e.message)
             }
             throw e
@@ -25,7 +25,19 @@ export class Form extends React.Component<{}, {}> {
         return this.form.elements.namedItem(name) as HTMLInputElement
     }
 
-    validateFields(): SignUp {
+    validateFields() {
+        try {
+            this.getSignUp()
+            return true
+        } catch (e) {
+            if (e instanceof SignUpDataError) {
+                return false
+            }
+            throw e
+        }
+    }
+
+    getSignUp(): SignUp {
         if (!this.form) {
             throw new FormNotBound("Form not bound.")
         }
@@ -42,11 +54,11 @@ export class Form extends React.Component<{}, {}> {
     handleSubmit(event: any) {
         event.preventDefault()
         try {
-            const signUp = this.validateFields()
+            const signUp = this.getSignUp()
             const json = JSON.stringify(signUp)
             console.log(`SignUp: ${json}`)
         } catch (e) {
-            if (e instanceof DataError) {
+            if (e instanceof SignUpDataError) {
                 console.error(`${e.name}: ${e.message}`)
                 return
             }
@@ -123,16 +135,16 @@ export class Phone {
 }
 
 
-class DataError implements Error {
-    readonly name: string = "DataError"
+class SignUpDataError implements Error {
+    readonly name: string = (this.constructor as any).name
 
     constructor(public message: string) {}
 }
 
-class ZIPError extends DataError {}
+class ZIPError extends SignUpDataError {}
 
-class PhoneError extends DataError {}
+class PhoneError extends SignUpDataError {}
 
-class FormNotBound extends DataError {}
+class FormNotBound extends SignUpDataError {}
 
-class FormNotValid extends DataError {}
+class FormNotValid extends SignUpDataError {}
