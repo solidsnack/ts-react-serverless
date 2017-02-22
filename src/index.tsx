@@ -5,7 +5,7 @@ import { Hello } from "./hello"
 
 
 ReactDOM.render(
-    <Hello headline="Land on your landing page"
-           tagline="Submit the form to learn more" />,
+    <Hello headline="Welcome to Landing Page!"
+           tagline="Sign up to learn more..." />,
     document.getElementById("hello")
 );

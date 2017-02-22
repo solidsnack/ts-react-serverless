@@ -6,6 +6,19 @@ export class SignUp {
                 readonly lastName: string,
                 readonly phone: Phone,
                 readonly zip: ZIP) {}
+
+    static fromJSON(json: any): SignUp {
+        try {
+            const phone = new Phone(json.phone)
+            const zip = new ZIP(json.zip)
+            return new SignUp(json.firstName, json.lastName, phone, zip)
+        } catch (e) {
+            if (e instanceof SignUpDataError) {
+                throw e
+            }
+            throw new SignUpDataError(e.message)       // Wrap other exceptions
+        }
+    }
 }
 
 
@@ -148,7 +161,7 @@ export class Phone {
 }
 
 
-class SignUpDataError implements Error {
+export class SignUpDataError implements Error {
     readonly name: string = (this.constructor as any).name
 
     constructor(public message: string) {}
