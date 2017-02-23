@@ -29,7 +29,9 @@ module.exports = [{
     entry: "./src/lambda.tsx",
     output: {
         filename: "lambda.js",
-        path: __dirname + "/dist"
+        path: __dirname + "/dist",
+        library: "[name]",
+        libraryTarget: "commonjs2",
     },
     // target: "node",
 
@@ -47,6 +49,6 @@ module.exports = [{
     },
 
     externals: {
-        "aws-sdk": "AWS"
+        "aws-sdk": "aws-sdk"
     },
 }];
