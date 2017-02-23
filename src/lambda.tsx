@@ -14,7 +14,7 @@ export function handler(event: any, context: any) {
         save(signUp, context)
     } catch (e) {
         if (e instanceof SignUpDataError) {
-             context.fail(`400 // SignUpDataError: ${e.message}`)
+             context.fail(new LambdaResult(400, {error: e.message}))
         }
     }
 }
@@ -25,10 +25,11 @@ function save(signUp: SignUp, context: any) {
     ddb.putItem(signUpDynamoFormat(signUp), (err, result) => {
         if (err) {
             console.error(`DynamoDB error: ${err.code} ${err.message}`)
-            context.fail("500 // ImpossibleError")
+            const error = "Impossible error!"
+            context.fail(new LambdaResult(500, {error}))
         } else {
             console.log("Stored object.")
-            context.success({thanks})
+            context.succeed(new LambdaResult(200, {message: thanks}))
         }
     })
 }
@@ -48,5 +49,20 @@ function signUpDynamoFormat(signUp: SignUp,
             asOf: { S: utcString }
         },
         TableName: table
+    }
+}
+
+
+class LambdaResult {
+    readonly statusCode: number
+    readonly headers: object
+    readonly body: string
+
+    constructor(statusCode: number = 200,
+                data: object = {},
+                headers: object = {"Content-Type": "application/json"}) {
+        this.statusCode = statusCode
+        this.headers = headers
+        this.body = JSON.stringify(data)
     }
 }
