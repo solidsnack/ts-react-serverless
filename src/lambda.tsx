@@ -21,7 +21,7 @@ export function handler(event: any, context: any) {
 
 
 function save(signUp: SignUp, context: any) {
-    console.log(`Trying to store: ${signUp}`)
+    console.log(`Trying to store: ${JSON.stringify(signUp)}`)
     ddb.putItem(signUpDynamoFormat(signUp), (err, result) => {
         if (err) {
             console.error(`DynamoDB error: ${err.code} ${err.message}`)
@@ -43,8 +43,8 @@ function signUpDynamoFormat(signUp: SignUp,
         Item: {
             firstName: { S: signUp.firstName },
             lastName: { S: signUp.lastName },
-            phone: { S: signUp.phone },
-            zip: { S: signUp.zip },
+            phone: { S: signUp.phone.normed },
+            zip: { S: signUp.zip.normed },
             asOf: { S: utcString }
         },
         TableName: table
