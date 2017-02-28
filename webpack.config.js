@@ -1,12 +1,25 @@
+const HTML = require("html-webpack-plugin")
+const HTMLInlineSource = require("html-webpack-inline-source-plugin")
+const pkg = require("./package.json")
+
 module.exports = [{
     entry: "./src/index.tsx",
     output: {
         filename: "client.js",
-        path: __dirname + "/dist"
+        library: "Application",
+        path: __dirname + "/dist",
     },
+    plugins: [
+        new HTML({
+            title: pkg.description,
+            inlineSource: /[.](js|css)$/,
+            template: "src/index.html"
+        }),
+        new HTMLInlineSource(),
+    ],
 
     // Enable sourcemaps for debugging webpack's output.
-    devtool: "source-map",
+    devtool: "inline-source-map",
 
     resolve: {
         // Add '.ts' and '.tsx' as resolvable extensions.
@@ -51,4 +64,4 @@ module.exports = [{
     externals: {
         "aws-sdk": "aws-sdk"
     },
-}];
+}]

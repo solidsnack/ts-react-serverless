@@ -5,9 +5,10 @@ import Err from "./err"
 import { Phone, SignUp, SignUpDataError, ZIP } from "./signup"
 
 
-ReactDOM.render(<Hello headline="Welcome to Landing Page!"
-                       tagline="Sign up to learn more..." />,
-                document.getElementById("hello"))
+export function render(root: HTMLElement) {
+    ReactDOM.render(<Hello headline="Welcome to Landing Page!"
+                           tagline="Sign up to learn more..." />, root)
+}
 
 
 interface ContentProps {

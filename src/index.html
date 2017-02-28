@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title><%= htmlWebpackPlugin.options.title %></title>
+    </head>
+    <body>
+        <div id="hello"></div>
+        <script src="../node_modules/react/dist/react.js"></script>
+        <script src="../node_modules/react-dom/dist/react-dom.js"></script>
+        <script type="text/javascript">
+            document.addEventListener("DOMContentLoaded", function() {
+                Application.render(document.getElementById("hello"))
+            })
+        </script>
+    </body>
+</html>
