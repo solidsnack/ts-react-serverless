@@ -9,28 +9,50 @@ import { Phone, SignUp, SignUpDataError, ZIP } from "./signup"
 
 export class Page extends React.Component<PageSettings, undefined> {
     render() {
-        return <html>
-            <head>
-                <meta charSet="UTF-8" />
-                <title>{this.props.headline}</title>
-            </head>
-            <body>
-                <article>
-                    <Content {...this.props} />
-                    <Form/>
-                </article>
-                <script src="../../node_modules/react/dist/react.js"></script>
-                <script src="../../node_modules/react-dom/dist/react-dom.js">
-                </script>
-                <script src="index.js"></script>
-            </body>
-        </html>
+        return <article>
+            <Content {...this.props} />
+            <Form/>
+        </article>
     }
 }
 
 
-export default (props: PageSettings) =>
-    "<!DOCTYPE html>\n" + ReactDOMServer.renderToString(<Page {...props} />)
+export function bind(props: PageSettings, element: HTMLElement) {
+    console.log("Binding element...", element)
+    ReactDOM.render(<Page {...props} />, element)
+}
+
+
+export default function (props: PageSettings): string {
+    // Props passed in from webpack are some kind of magic object with extra,
+    // self-referencing fields. We must thus narrow the props.
+    const narrowedProps = {headline: props.headline, tagline: props.tagline}
+    const func = `
+        function bind() {
+            LandingPage.bind(
+                ${JSON.stringify(narrowedProps)},
+                document.getElementById("container")
+            )
+        }
+
+        document.addEventListener("DOMContentLoaded", bind())
+    `
+    return "<!DOCTYPE html>\n" + ReactDOMServer.renderToStaticMarkup(<html>
+        <head>
+            <meta charSet="UTF-8" />
+            <title>{props.headline}</title>
+        </head>
+        <body>
+            <div id="container">
+                <Page {...props} />
+            </div>
+            <script src="index.js"></script>
+            <script type="text/javascript"
+                    dangerouslySetInnerHTML={ {__html: func} }>
+            </script>
+        </body>
+    </html>)
+}
 
 
 export interface PageSettings {
