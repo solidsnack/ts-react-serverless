@@ -1,7 +1,11 @@
 {
   "name": "ts-sample",
   "version": "0.0.1",
-  "description": "Sample",
+  "description": "Welcome to LandingPage!",
+  "landingPage": {
+    "headline": "Welcome to LandingPage!",
+    "tagline": "Input data and hit `Enter`"
+  },
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -19,6 +23,7 @@
   "devDependencies": {
     "awesome-typescript-loader": "^3.0.4",
     "source-map-loader": "^0.1.6",
+    "static-site-generator-webpack-plugin": "^3.2.0",
     "tslint": "^4.4.2",
     "typescript": "^2.1.6",
     "webpack": "^2.2.1"

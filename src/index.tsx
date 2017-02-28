@@ -1,33 +1,45 @@
 import * as React from "react"
 import * as ReactDOM from "react-dom"
+import * as ReactDOMServer from "react-dom/server"
+
 
 import Err from "./err"
 import { Phone, SignUp, SignUpDataError, ZIP } from "./signup"
 
 
-ReactDOM.render(<Hello headline="Welcome to Landing Page!"
-                       tagline="Sign up to learn more..." />,
-                document.getElementById("hello"))
+export class Page extends React.Component<PageSettings, undefined> {
+    render() {
+        return <html>
+            <head>
+                <meta charSet="UTF-8" />
+                <title>{this.props.headline}</title>
+            </head>
+            <body>
+                <article>
+                    <Content {...this.props} />
+                    <Form/>
+                </article>
+                <script src="../../node_modules/react/dist/react.js"></script>
+                <script src="../../node_modules/react-dom/dist/react-dom.js">
+                </script>
+                <script src="index.js"></script>
+            </body>
+        </html>
+    }
+}
 
 
-interface ContentProps {
+export default (props: PageSettings) =>
+    "<!DOCTYPE html>\n" + ReactDOMServer.renderToString(<Page {...props} />)
+
+
+export interface PageSettings {
     headline: string
     tagline: string
 }
 
 
-class Hello extends React.Component<ContentProps, undefined> {
-    render() {
-        return <article>
-            <Content headline={this.props.headline}
-                     tagline={this.props.tagline} />
-            <Form/>
-        </article>
-    }
-}
-
-
-class Content extends React.Component<ContentProps, undefined> {
+class Content extends React.Component<PageSettings, undefined> {
     render() {
         return <section>
             <h1>{this.props.headline}</h1>
