@@ -82,3 +82,23 @@ export class SignUpDataError extends Err {}
 class ZIPError extends SignUpDataError {}
 
 class PhoneError extends SignUpDataError {}
+
+
+export class Envelope<T> {
+    public constructor(readonly event: string,
+                       readonly timestamp: Date,
+                       readonly data: T) {}
+}
+
+
+export class Result {
+    public constructor(readonly ok: boolean, readonly message: string) {}
+
+    static fromJSON(json: any): Result {
+        try {
+            return new Result(json.status, json.message)
+        } catch (e) {
+            throw new SignUpDataError(e.message)       // Wrap other exceptions
+        }
+    }
+}

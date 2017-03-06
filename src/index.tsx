@@ -2,16 +2,17 @@ import * as React from "react"
 import * as ReactDOM from "react-dom"
 import * as ReactDOMServer from "react-dom/server"
 
+import "whatwg-fetch"            // Adds `fetch` to globals...no actual exports
 
 import Err from "./err"
-import { Phone, SignUp, SignUpDataError, ZIP } from "./signup"
+import { Phone, SignUp, SignUpDataError, Result, ZIP } from "./signup"
 
 
 export class Page extends React.Component<PageSettings, undefined> {
     render() {
         return <article>
             <Content {...this.props} />
-            <Form/>
+            <Form {...this.props} />
         </article>
     }
 }
@@ -26,11 +27,11 @@ export function bind(props: PageSettings, element: HTMLElement) {
 export default function (props: PageSettings): string {
     // Props passed in from webpack are some kind of magic object with extra,
     // self-referencing fields. We must thus narrow the props.
-    const narrowedProps = {headline: props.headline, tagline: props.tagline}
+    const {headline, tagline, endpoint} = props
     const func = `
         function bind() {
             LandingPage.bind(
-                ${JSON.stringify(narrowedProps)},
+                ${JSON.stringify({headline, tagline, endpoint})},
                 document.getElementById("container")
             )
         }
@@ -58,6 +59,7 @@ export default function (props: PageSettings): string {
 export interface PageSettings {
     headline: string
     tagline: string
+    endpoint: string
 }
 
 
@@ -71,7 +73,7 @@ class Content extends React.Component<PageSettings, undefined> {
 }
 
 
-class Form extends React.Component<undefined, undefined> {
+class Form extends React.Component<PageSettings, undefined> {
     private form: HTMLFormElement | null = null
 
     static validate<T>(input: HTMLInputElement,
@@ -121,12 +123,37 @@ class Form extends React.Component<undefined, undefined> {
         return new SignUp(firstName, lastName, phone, zip)
     }
 
+    display(ok: boolean, message: string) {
+        if (ok) {
+            console.log(`Success message: ${message}`)
+        } else {
+            console.log(`Error was: ${message}`)
+        }
+    }
+
     handleSubmit(event: any) {
         event.preventDefault()
         try {
+            const url = this.props.endpoint
             const signUp = this.getSignUp()
-            const json = JSON.stringify(signUp)
-            console.log(`SignUp: ${json}`)
+            console.log(`Sending to ${url}: ${JSON.stringify(signUp)}`)
+            const request = {
+                method: "POST",
+                body: JSON.stringify(signUp, null, 2),
+                headers: {"Content-Type": "application/json"},
+                // credentials: "same-origin",
+                mode: "no-cors"
+            }
+            fetch(url, request).then((response: Response) => {
+                try {
+                    const parsed = Result.fromJSON(response.json())
+                    this.display(response.ok, parsed.message)
+                } catch (e) {
+                    this.display(false, "Malformed server response.")
+                }
+            }).catch((err) => {
+                this.display(false, `Mysterious error: ${err.message}`)
+            })
         } catch (e) {
             if (e instanceof SignUpDataError) {
                 console.error(`${e.name}: ${e.message}`)
@@ -161,6 +188,6 @@ class Form extends React.Component<undefined, undefined> {
 
 class FormError extends Err {}
 
-class FormNotBound extends SignUpDataError {}
+class FormNotBound extends FormError {}
 
-class FormNotValid extends SignUpDataError {}
+class FormNotValid extends FormError {}

@@ -1,7 +1,7 @@
 import * as AWS from "aws-sdk"
 
 import Err from "./err"
-import { SignUp, SignUpDataError } from "./signup"
+import { Envelope, SignUp, SignUpDataError, Result } from "./signup"
 
 
 const s3 = new AWS.S3()
@@ -9,9 +9,7 @@ const s3 = new AWS.S3()
 const thanks = "Thanks for signing up for Landing Page!"
 
 
-export function handler(event: any, context: any,
-                        callback: (err: Error | null,
-                                   result: object) => never) {
+export function handler(event: any, context: any, callback: LambdaCallback) {
     try {
         const uuid: string = context.awsRequestId
         const signUp = SignUp.fromJSON(JSON.parse(event.body))
@@ -19,18 +17,29 @@ export function handler(event: any, context: any,
         const store = new S3Store(bucket, prefix)
         store.save(signUp, uuid).then(() => {
             console.log("Stored object.")
-            callback(null, new LambdaResult(200, {message: thanks}))
+            sendResult(200, thanks, callback)
         }).catch((err) => {
             console.error(`Storage error: ${err.code} "${err.message}"`)
-            const error = "Impossible error!"
-            callback(null, new LambdaResult(500, {error}))
+            sendResult(500, "Impossible error!", callback)
         })
     } catch (e) {
         if (e instanceof SignUpDataError) {
-            callback(null, new LambdaResult(400, {error: e.message}))
+            sendResult(400, e.message, callback)
         }
     }
 }
+
+
+function sendResult(code: number, message: string, callback: LambdaCallback) {
+    callback(null, {
+        statusCode: code,
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(new Result(code == 200, message))
+    })
+}
+
+
+type LambdaCallback = (err: Error | null, result: object) => never
 
 
 class S3Store {
@@ -64,13 +73,6 @@ class S3Store {
 }
 
 
-class Envelope<T> {
-    constructor(readonly event: string,
-                readonly timestamp: Date,
-                readonly data: T) {}
-}
-
-
 function envS3Settings(): [string, string] {
     if (process.env.S3URL) {
         return splitS3URL(process.env.S3URL)
@@ -85,21 +87,6 @@ function splitS3URL(url: string): [string, string] {
         throw new LambdaError("Invalid S3 URL.")
     }
     return [match[1], match[2].replace(/(^[/]+)|([/]+$)/, "")]
-}
-
-
-class LambdaResult {
-    readonly statusCode: number
-    readonly headers: object
-    readonly body: string
-
-    constructor(statusCode: number = 200,
-                data: object = {},
-                headers: object = {"Content-Type": "application/json"}) {
-        this.statusCode = statusCode
-        this.headers = headers
-        this.body = JSON.stringify(data)
-    }
 }
 
 
