@@ -19,6 +19,10 @@ export class SignUp {
             throw new SignUpDataError(e.message)       // Wrap other exceptions
         }
     }
+
+    key(): string {
+        return this.phone.normed
+    }
 }
 
 

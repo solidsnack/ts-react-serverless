@@ -1,55 +1,89 @@
 import * as AWS from "aws-sdk"
 
+import Err from "./err"
 import { SignUp, SignUpDataError } from "./signup"
 
 
-const ddb = new AWS.DynamoDB()
+const s3 = new AWS.S3()
 
 const thanks = "Thanks for signing up for Landing Page!"
 
 
-export function handler(event: any, context: any) {
+export function handler(event: any, context: any,
+                        callback: (err: Error | null,
+                                   result: object) => never) {
     try {
+        const uuid: string = context.awsRequestId
         const signUp = SignUp.fromJSON(JSON.parse(event.body))
-        save(signUp, context)
+        const [bucket, prefix] = envS3Settings()
+        const store = new S3Store(bucket, prefix)
+        store.save(signUp, uuid).then(() => {
+            console.log("Stored object.")
+            callback(null, new LambdaResult(200, {message: thanks}))
+        }).catch((err) => {
+            console.error(`Storage error: ${err.code} "${err.message}"`)
+            const error = "Impossible error!"
+            callback(null, new LambdaResult(500, {error}))
+        })
     } catch (e) {
         if (e instanceof SignUpDataError) {
-             context.fail(new LambdaResult(400, {error: e.message}))
+            callback(null, new LambdaResult(400, {error: e.message}))
         }
     }
 }
 
 
-function save(signUp: SignUp, context: any) {
-    console.log(`Trying to store: ${JSON.stringify(signUp)}`)
-    ddb.putItem(signUpDynamoFormat(signUp), (err, result) => {
-        if (err) {
-            console.error(`DynamoDB error: ${err.code} ${err.message}`)
-            const error = "Impossible error!"
-            context.fail(new LambdaResult(500, {error}))
-        } else {
-            console.log("Stored object.")
-            context.succeed(new LambdaResult(200, {message: thanks}))
-        }
-    })
+class S3Store {
+    readonly bucket: string
+    readonly prefix: string
+
+    constructor(bucket: string, prefix: string) {
+        this.bucket = bucket
+        this.prefix = prefix.replace(/(^[/]+)|([/]+$)/, "")
+    }
+
+    key_and_envelope(signUp: SignUp, uuid: string): [string, Envelope] {
+        const t = new Date()
+        const utc_timestamp = t.toISOString()
+        const ymd = utc_timestamp.slice(0, 10)
+        const hms = utc_timestamp.slice(11, 19)
+        const f = signUp.key().replace(/(^[/]+)|([/]+$)/, "") + ".json"
+        const key = `${this.prefix}/${ymd}/${hms}/${f}`
+        return [key, new Envelope(uuid, t, signUp)]
+    }
+
+    async save(signUp: SignUp, uuid: string): Promise<AWS.S3.PutObjectOutput> {
+        const bucket = this.bucket
+        const [key, envelope] = this.key_and_envelope(signUp, uuid)
+        const body = JSON.stringify(envelope, null, 2) + "\n"
+        const req = s3.putObject({Bucket: bucket, Key: key, Body: body})
+        console.log(`Storing object as: s3://${bucket}/${key}`)
+        return req.promise()
+    }
 }
 
 
-function signUpDynamoFormat(signUp: SignUp,
-                            nominalDate?: Date,
-                            table: string = "LandingPageEvents"): any {
-    const date = nominalDate ? nominalDate : new Date()
-    const utcString = date.toISOString()           // Seems to do UTC *and* ISO
-    return {
-        Item: {
-            firstName: { S: signUp.firstName },
-            lastName: { S: signUp.lastName },
-            phone: { S: signUp.phone.normed },
-            zip: { S: signUp.zip.normed },
-            asOf: { S: utcString }
-        },
-        TableName: table
+class Envelope {
+    constructor(readonly event: string,
+                readonly timestamp: Date,
+                readonly data: any) {}
+}
+
+
+function envS3Settings(): [string, string] {
+    if (process.env.S3URL) {
+        return splitS3URL(process.env.S3URL)
     }
+    throw new LambdaError("Please define: S3URL=s3://<bucket>/<prefix>")
+}
+
+
+function splitS3URL(url: string): [string, string] {
+    const match = /^s3:[/][/]([^/]+)[/](.*)$/.exec(url)
+    if (!match) {
+        throw new LambdaError("Invalid S3 URL.")
+    }
+    return [match[1], match[2].replace(/(^[/]+)|([/]+$)/, "")]
 }
 
 
@@ -66,3 +100,6 @@ class LambdaResult {
         this.body = JSON.stringify(data)
     }
 }
+
+
+class LambdaError extends Err {}

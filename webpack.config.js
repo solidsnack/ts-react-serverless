@@ -38,6 +38,7 @@ module.exports = [{
         library: "LandingPage",
         libraryTarget: "commonjs2"
     },
+    target: "node",
 
     resolve: {
         // Add '.ts' and '.tsx' as resolvable extensions.
