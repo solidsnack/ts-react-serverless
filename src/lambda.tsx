@@ -42,7 +42,8 @@ class S3Store {
         this.prefix = prefix.replace(/(^[/]+)|([/]+$)/, "")
     }
 
-    key_and_envelope(signUp: SignUp, uuid: string): [string, Envelope] {
+    key_and_envelope(signUp: SignUp, uuid: string): [string,
+                                                     Envelope<SignUp>] {
         const t = new Date()
         const utc_timestamp = t.toISOString()
         const ymd = utc_timestamp.slice(0, 10)
@@ -63,10 +64,10 @@ class S3Store {
 }
 
 
-class Envelope {
+class Envelope<T> {
     constructor(readonly event: string,
                 readonly timestamp: Date,
-                readonly data: any) {}
+                readonly data: T) {}
 }
 
 
