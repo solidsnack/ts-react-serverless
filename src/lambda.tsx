@@ -33,7 +33,10 @@ export function handler(event: any, context: any, callback: LambdaCallback) {
 function sendResult(code: number, message: string, callback: LambdaCallback) {
     callback(null, {
         statusCode: code,
-        headers: {"Content-Type": "application/json"},
+        headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*"
+        },
         body: JSON.stringify(new Result(code == 200, message))
     })
 }

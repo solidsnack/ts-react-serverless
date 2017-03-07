@@ -159,16 +159,15 @@ class Form extends React.Component<PageSettings, undefined> {
                 body: JSON.stringify(signUp, null, 2),
                 headers: {"Content-Type": "application/json"},
                 // credentials: "same-origin",
-                mode: "no-cors"
+                // mode: "no-cors"
             }
             fetch(url, request).then((response: Response) => {
                 this.formToggle({enabled: true})
-                try {
-                    const parsed = Result.fromJSON(response.json())
+                console.log(`Response (${response.status}): `, response)
+                return response.json().then((json) => {
+                    const parsed = Result.fromJSON(json)
                     this.display(response.ok, parsed.message)
-                } catch (e) {
-                    this.display(false, "Malformed server response.")
-                }
+                })
             }).catch((err) => {
                 this.formToggle({enabled: true})
                 this.display(false, `Mysterious error: ${err.message}`)
