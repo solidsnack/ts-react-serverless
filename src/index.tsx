@@ -124,15 +124,32 @@ class Form extends React.Component<PageSettings, undefined> {
     }
 
     display(ok: boolean, message: string) {
-        if (ok) {
-            console.log(`Success message: ${message}`)
-        } else {
-            console.log(`Error was: ${message}`)
+        if (!this.form) {
+            return
+        }
+        const p = this.form.querySelector("p")
+        if (!p) {
+            throw new FormBroken("Form should have a <p/> element.")
+        }
+        p.textContent = message
+        this.form.className = ok ? "success" : "error"
+    }
+
+    formToggle(options: {enabled: boolean}) {
+        let i = 0
+        if (!this.form) {
+            return
+        }
+        while (i < this.form.elements.length) {
+            const e = this.form.elements.item(i) as HTMLInputElement
+            e.readOnly = !options.enabled
+            i += 1
         }
     }
 
     handleSubmit(event: any) {
         event.preventDefault()
+        this.formToggle({enabled: false})
         try {
             const url = this.props.endpoint
             const signUp = this.getSignUp()
@@ -145,6 +162,7 @@ class Form extends React.Component<PageSettings, undefined> {
                 mode: "no-cors"
             }
             fetch(url, request).then((response: Response) => {
+                this.formToggle({enabled: true})
                 try {
                     const parsed = Result.fromJSON(response.json())
                     this.display(response.ok, parsed.message)
@@ -152,6 +170,7 @@ class Form extends React.Component<PageSettings, undefined> {
                     this.display(false, "Malformed server response.")
                 }
             }).catch((err) => {
+                this.formToggle({enabled: true})
                 this.display(false, `Mysterious error: ${err.message}`)
             })
         } catch (e) {
@@ -165,9 +184,11 @@ class Form extends React.Component<PageSettings, undefined> {
 
     render() {
         const len = 128
+        const message = "Please input your data to sign up."
         return <section>
             <form onSubmit={(event) => this.handleSubmit(event)}
                   ref={(el) => {this.form = el}}>
+                <p>{message}</p>
                 <input name="firstName" type="text" maxLength={len} required
                        placeholder="First Name" />
                 <input name="lastName" type="text" maxLength={len} required
@@ -191,3 +212,5 @@ class FormError extends Err {}
 class FormNotBound extends FormError {}
 
 class FormNotValid extends FormError {}
+
+class FormBroken extends FormError {}
