@@ -5,6 +5,7 @@ import * as ReactDOMServer from "react-dom/server"
 import "whatwg-fetch"            // Adds `fetch` to globals...no actual exports
 
 import Err from "./err"
+import * as css from "./index.css"
 import { Phone, SignUp, SignUpDataError, Result, ZIP } from "./signup"
 
 
@@ -42,6 +43,7 @@ export default function (props: PageSettings): string {
         <head>
             <meta charSet="UTF-8" />
             <title>{props.headline}</title>
+            <link rel="stylesheet" type="text/css" href="styles.css"/>
         </head>
         <body>
             <div id="container">
@@ -186,7 +188,8 @@ class Form extends React.Component<PageSettings, undefined> {
         const message = "Please input your data to sign up."
         return <section>
             <form onSubmit={(event) => this.handleSubmit(event)}
-                  ref={(el) => {this.form = el}}>
+                  ref={(el) => {this.form = el}}
+                  className={css.mainform}>
                 <p>{message}</p>
                 <input name="firstName" type="text" maxLength={len} required
                        placeholder="First Name" />

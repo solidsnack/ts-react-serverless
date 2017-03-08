@@ -24,10 +24,15 @@
   },
   "devDependencies": {
     "awesome-typescript-loader": "^3.0.4",
+    "css-loader": "^0.26.4",
+    "extract-text-webpack-plugin": "^2.1.0",
     "source-map-loader": "^0.1.6",
     "static-site-generator-webpack-plugin": "^3.2.0",
+    "style-loader": "^0.13.2",
     "tslint": "^4.4.2",
+    "typed-css-modules": "^0.2.0",
     "typescript": "^2.1.6",
+    "typings-for-css-modules-loader": "^1.5.0",
     "webpack": "^2.2.1"
   }
 }

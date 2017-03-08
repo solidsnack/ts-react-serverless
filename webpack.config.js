@@ -1,3 +1,4 @@
+const ExtractTextPlugin = require("extract-text-webpack-plugin")
 const StaticSiteGenerator = require("static-site-generator-webpack-plugin")
 const pkg = require("./package.json")
 
@@ -11,23 +12,33 @@ module.exports = [{
     },
 
     plugins: [
-        new StaticSiteGenerator({locals: pkg.landingPage})
+        new StaticSiteGenerator({locals: pkg.landingPage}),
+        new ExtractTextPlugin("styles.css")
     ],
 
-    // Enable sourcemaps for debugging webpack's output.
     devtool: "source-map",
 
     resolve: {
-        // Add '.ts' and '.tsx' as resolvable extensions.
-        extensions: [".webpack.js", ".web.js", ".ts", ".tsx", ".js"]
+        extensions: [".webpack.js", ".web.js", ".ts", ".tsx", ".js", ".css"]
     },
 
     module: {
-        loaders: [
-            // All files with a '.ts' or '.tsx' extension will be handled by
-            // 'awesome-typescript-loader'.
-            { test: /\.tsx?$/, loader: "awesome-typescript-loader" }
-        ],
+        loaders: [{
+            test: /[.]tsx?$/,
+            loader: "awesome-typescript-loader",
+        }, {
+            test: /[.]css?$/,
+            loader: ExtractTextPlugin.extract({
+                use: {
+                    loader: "typings-for-css-modules-loader",
+                    options: {
+                        modules: true,
+                        namedExport: true,
+                        camelCase: true
+                    }
+                }
+            })
+        }],
     }
 },
 {
@@ -41,16 +52,14 @@ module.exports = [{
     target: "node",
 
     resolve: {
-        // Add '.ts' and '.tsx' as resolvable extensions.
         extensions: [".webpack.js", ".web.js", ".ts", ".tsx", ".js"]
     },
 
     module: {
-        loaders: [
-            // All files with a '.ts' or '.tsx' extension will be handled by
-            // 'awesome-typescript-loader'.
-            { test: /\.tsx?$/, loader: "awesome-typescript-loader" }
-        ],
+        loaders: [{
+            test: /[.]tsx?$/,
+            loader: "awesome-typescript-loader"
+        }],
     },
 
     externals: {
