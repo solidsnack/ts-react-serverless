@@ -43,14 +43,6 @@ export default function (props: PageSettings): string {
             <meta charSet="UTF-8" />
             <title>{props.headline}</title>
             <link rel="stylesheet" type="text/css" href="styles.css"/>
-            <style type="text/css">
-                html, body {"{"}
-                    margin: 0;
-                    padding: 0;
-                    height: 100%;
-                    width: 100%;
-                {"}"}
-            </style>
         </head>
         <body>
             <div id={css.mainpanel} className={css.mainpanel}>

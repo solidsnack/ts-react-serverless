@@ -19,7 +19,8 @@ module.exports = [{
     devtool: "source-map",
 
     resolve: {
-        extensions: [".webpack.js", ".web.js", ".ts", ".tsx", ".js", ".css"]
+        extensions: [".webpack.js", ".web.js", ".ts", ".tsx", ".js",
+                     ".css", ".png"]
     },
 
     module: {
@@ -38,6 +39,9 @@ module.exports = [{
                     }
                 }
             })
+        }, {
+            test: /[.]png$/,
+            loader: require.resolve("file-loader")
         }],
     }
 },
