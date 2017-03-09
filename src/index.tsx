@@ -31,10 +31,9 @@ export default function (props: PageSettings): string {
     const {headline, tagline, endpoint} = props
     const func = `
         function bind() {
-            LandingPage.bind(
-                ${JSON.stringify({headline, tagline, endpoint})},
-                document.getElementById("container")
-            )
+            var data = ${JSON.stringify({headline, tagline, endpoint})}
+            var target = "${css.mainpanel}"
+            LandingPage.bind(data, document.getElementById(target))
         }
 
         document.addEventListener("DOMContentLoaded", bind())
@@ -44,9 +43,17 @@ export default function (props: PageSettings): string {
             <meta charSet="UTF-8" />
             <title>{props.headline}</title>
             <link rel="stylesheet" type="text/css" href="styles.css"/>
+            <style type="text/css">
+                html, body {"{"}
+                    margin: 0;
+                    padding: 0;
+                    height: 100%;
+                    width: 100%;
+                {"}"}
+            </style>
         </head>
         <body>
-            <div id="container">
+            <div id={css.mainpanel} className={css.mainpanel}>
                 <Page {...props} />
             </div>
             <script src="index.js"></script>
