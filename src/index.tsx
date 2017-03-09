@@ -133,7 +133,6 @@ class Form extends React.Component<PageSettings, undefined> {
             throw new FormBroken("Form should have a <p/> element.")
         }
         p.textContent = message
-        this.form.className = ok ? "success" : "error"
     }
 
     formToggle(options: {enabled: boolean}) {

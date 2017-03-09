@@ -38,3 +38,9 @@ html, body {
     width: 100%;
     margin: 1em 0;
 }
+
+.mainform p {
+    min-height: 2em;
+    min-width: 1em;
+}
+
