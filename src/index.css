@@ -1,8 +1,11 @@
+@import url("https://fonts.googleapis.com/css?family=Cousine");
+
 html, body {
     margin: 0;
     padding: 0;
     height: 100%;
     width: 100%;
+    font-family: Cousine, monospace;
 }
 
 .mainpanel {
@@ -32,7 +35,7 @@ html, body {
 }
 
 .mainform input[type="text"], .mainform input[type="tel"] {
-    font-family: Courier New, Courier, monospace;
+    font-family: Cousine, monospace;
     display: block;
     box-sizing: border-box;
     width: 100%;
@@ -43,4 +46,3 @@ html, body {
     min-height: 2em;
     min-width: 1em;
 }
-
