@@ -1,4 +1,5 @@
-const ExtractTextPlugin = require("extract-text-webpack-plugin")
+import * as ExtractTextPlugin from "extract-text-webpack-plugin"
+
 const StaticSiteGenerator = require("static-site-generator-webpack-plugin")
 const pkg = require("./package.json")
 
