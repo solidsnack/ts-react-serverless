@@ -1,0 +1,72 @@
+/* NB: Font is required by Skeleton, but not included (?) */
+@import url("//fonts.googleapis.com/css?family=Raleway:400,300,600");
+@import url("./skeleton/normalize.css");
+@import url("./skeleton/skeleton.css");
+
+
+html, body, .outerpanel {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+}
+
+.mainpanel {
+    display: table;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    background: url("./background.png");
+}
+
+.mainpanel article {
+    display: table-row;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    vertical-align: middle;
+    text-align: center;
+}
+
+.mainpanel section {
+    display: table-cell;
+    width: 50%;
+    height: 100%;
+    margin: 0;
+}
+
+.logo-frame {
+    height: 25%;
+}
+
+.logo {
+    background: url("./background.png");
+    background-size: cover;
+    transform: rotate(30deg);
+    transform-origin: center;
+    height: 100%;
+}
+
+.mainform input[type="text"], .mainform input[type="tel"] {
+    display: block;
+    box-sizing: border-box;
+    width: 100%;
+    margin: 1rem 0;
+}
+
+.mainform p {
+    min-height: 2rem;
+    min-width: 1rem;
+}
+
+@media only screen and (orientation: portrait) {
+    .mainpanel section {
+        width: 100%;
+        display: block;
+    }
+
+    .mainpanel article {
+        display: block;
+    }
+}

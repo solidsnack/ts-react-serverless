@@ -4,18 +4,28 @@ import * as ReactDOMServer from "react-dom/server"
 
 import "whatwg-fetch"            // Adds `fetch` to globals...no actual exports
 
+import * as css from "./css"
 import Err from "./err"
-import * as css from "./index.css"
 import { Phone, SignUp, SignUpDataError, Result, ZIP } from "./signup"
 
 
 export class Page extends React.Component<PageSettings, undefined> {
     render() {
-        return <article>
-            <Content {...this.props} />
-            <Form {...this.props} />
-        </article>
+        return <div className={css.mainpanel}>
+            <Logo/>
+            <article>
+               <Content {...this.props} />
+               <Form {...this.props} />
+            </article>
+        </div>
     }
+}
+
+
+export interface PageSettings {
+    headline: string
+    tagline: string
+    endpoint: string
 }
 
 
@@ -32,7 +42,7 @@ export default function (props: PageSettings): string {
     const func = `
         function bind() {
             var data = ${JSON.stringify({headline, tagline, endpoint})}
-            var target = "${css.mainpanel}"
+            var target = "${css.outerpanel}"
             LandingPage.bind(data, document.getElementById(target))
         }
 
@@ -43,9 +53,11 @@ export default function (props: PageSettings): string {
             <meta charSet="UTF-8" />
             <title>{props.headline}</title>
             <link rel="stylesheet" type="text/css" href="styles.css"/>
+            <meta name="viewport"
+                  content="width=device-width, initial-scale=1"/>
         </head>
         <body>
-            <div id={css.mainpanel} className={css.mainpanel}>
+            <div id={css.outerpanel} className={css.outerpanel}>
                 <Page {...props} />
             </div>
             <script src="index.js"></script>
@@ -57,10 +69,12 @@ export default function (props: PageSettings): string {
 }
 
 
-export interface PageSettings {
-    headline: string
-    tagline: string
-    endpoint: string
+export class Logo extends React.Component<undefined, undefined> {
+    render() {
+        return <article className={css.logoFrame}>
+            <div className={css.logo}/>
+        </article>
+    }
 }
 
 
